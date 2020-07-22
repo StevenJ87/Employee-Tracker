@@ -1,3 +1,4 @@
+// Server Connection
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
@@ -36,6 +37,7 @@ function welcome(){
         }).then(results=>{runSearch()});  
 }
 
+// Menu
 function runSearch() {
   inquirer
     .prompt({
@@ -123,6 +125,8 @@ function runSearch() {
       }
     });
 }
+
+// Return to Menu
 function orExit(){
     inquirer
     .prompt({
@@ -146,7 +150,10 @@ function orExit(){
       }
     });
 }
-// Function
+
+// Functions
+
+// Add Department
 function addDep(){
     viewDep()
     .then(res=>{console.table(res)})
@@ -170,6 +177,7 @@ return new Promise((resolve,reject)=>{
     ).then(results=>{orExit()});
 };
 
+// Add Role
 function addRole(){
     depReset()
     viewRole()
@@ -196,6 +204,8 @@ return new Promise((resolve,reject)=>{
     }
     ).then(results=>{orExit()});
 };
+
+// Add Employee
 function addEmp(){
     depReset()
     roleReset()
@@ -223,6 +233,8 @@ return new Promise((resolve,reject)=>{
     }
     ).then(results=>{orExit()});
 };
+
+// View Departments
 function viewDep(){
     return new Promise((resolve,reject)=>{
         connection.query("SELECT * FROM department", function (err, results){
@@ -231,6 +243,8 @@ function viewDep(){
         })
     })  
 };
+
+// View Roles
 function viewRole(){
     return new Promise((resolve,reject)=>{
          connection.query(`
@@ -241,6 +255,8 @@ function viewRole(){
     })
 })
 };
+
+// View Employees
 function viewEmp(){
     return new Promise((resolve,reject)=>{
         connection.query(`
@@ -251,27 +267,31 @@ function viewEmp(){
    })
 })
 };
-function updateDep(){
 
-};
-function updateRole(){
 
-};
-function updateEmp(){
+// function updateDep(){
 
-};
-function deleteDep(){
+// };
+// function updateRole(){
 
-};
-function deleteRole(){
+// };
+// function updateEmp(){
 
-};
-function deleteEmp(){
+// };
+// function deleteDep(){
 
-};
+// };
+// function deleteRole(){
+
+// };
+// function deleteEmp(){
+
+// };
 
 
 // Prompts
+
+// Adding Department
 const addADepartment = [
     {
         name: "dep_name",
@@ -280,6 +300,7 @@ const addADepartment = [
     }
 ];
 
+// Adding Role
 let departments =[]
 let addARole = []
 function depReset(){viewDep().then(results=>{
@@ -306,6 +327,7 @@ function depReset(){viewDep().then(results=>{
 });
 };
 
+// Adding Employee
 let roles =[]
 let addEmployee = []
 function roleReset(){viewRole().then(results=>{
