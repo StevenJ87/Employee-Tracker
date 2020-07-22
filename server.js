@@ -73,15 +73,24 @@ function runSearch() {
             break;
 
         case "View Department":
-            viewDep();
+            viewDep()
+            .then(res=>{console.table(res);
+            orExit();
+            })
             break;
     
         case "View Role":
-            viewRole();
+            viewRole()
+            .then(res=>{console.table(res);
+            orExit();
+            });
             break;
     
         case "View Employee":
-            viewEmp();
+            viewEmp()
+            .then(res=>{console.table(res);
+            orExit();
+            });
             break;
 
         case "Update Department":
@@ -139,7 +148,8 @@ function orExit(){
 }
 // Function
 function addDep(){
-    viewDep3()
+    viewDep()
+    .then(res=>{console.table(res)})
     .then(results=>{
 return new Promise((resolve,reject)=>{
         inquirer.prompt(addADepartment)
@@ -161,17 +171,17 @@ return new Promise((resolve,reject)=>{
 };
 
 function addRole(){
-    viewRole2()
+    viewRole()
+    .then(res=>{console.table(res)})
     .then(results=>{
 return new Promise((resolve,reject)=>{
     inquirer.prompt(addARole)
     .then(answer=>
     connection.query(`
-    INSERT INTO job_role (id,title,salary,department)
-    VALUES (?,?,?,?);
+    INSERT INTO job_role (title,salary,department)
+    VALUES (?,?,?);
     `,
     [
-        answer.id,
         answer.title,
         answer.salary,
         answer.department.split(" ")[0],
@@ -185,34 +195,37 @@ return new Promise((resolve,reject)=>{
     ).then(results=>{orExit()});
 };
 function addEmp(){
-
+    viewEmp()
+    .then(res=>{console.table(res)})
+    .then(results=>{
+return new Promise((resolve,reject)=>{
+    inquirer.prompt(addEmployee)
+    .then(answer=>
+    connection.query(`
+    INSERT INTO employee (first_name,last_name,job_role,department)
+    VALUES (?,?,?,?);
+    `,
+    [
+        answer.first_name,
+        answer.last_name,
+        answer.job_role.split(" ")[0],
+        answer.department.split(" ")[0],
+    ], function (err, res){
+        if (err) throw err;
+        console.table(answer.title+" Added \n");
+        resolve(results);
+    })
+    )})
+    }
+    ).then(results=>{orExit()});
 };
 function viewDep(){
     return new Promise((resolve,reject)=>{
         connection.query("SELECT * FROM department", function (err, results){
             if (err) throw err;
-            console.table(results);
-            resolve(results);
-        })
-    }).then(results=>{orExit()});  
-};
-function viewDep3(){
-    return new Promise((resolve,reject)=>{
-        connection.query("SELECT * FROM department", function (err, results){
-            if (err) throw err;
-            console.table(results);
             resolve(results);
         })
     })  
-};
-function viewDep2(){
-    return new Promise((resolve,reject)=>{
-        connection.query("SELECT * FROM department", function (err, results){
-        if (err) throw err;
-        resolve(results);
-        })
-    })
-    
 };
 function viewRole(){
     return new Promise((resolve,reject)=>{
@@ -220,24 +233,19 @@ function viewRole(){
         SELECT * FROM job_role;
          `, function (err, results){
         if (err) throw err;
-        console.table(results);
-        resolve(results);
-    })
-}).then(results=>{orExit()});
-};
-function viewRole2(){
-    return new Promise((resolve,reject)=>{
-         connection.query(`
-        SELECT * FROM job_role;
-         `, function (err, results){
-        if (err) throw err;
-        console.table(results);
         resolve(results);
     })
 })
 };
 function viewEmp(){
-
+    return new Promise((resolve,reject)=>{
+        connection.query(`
+        SELECT * FROM employee;
+        `, function (err, results){
+        if (err) throw err;
+        resolve(results);
+   })
+})
 };
 function updateDep(){
 
@@ -270,14 +278,9 @@ const addADepartment = [
 
 let departments =[]
 let addARole = []
-viewDep2().then(results=>{
+viewDep().then(results=>{
   departments =  results.map(name=>name.id + " "+name.dep_name)
   addARole = [
-    {
-        name: "id",
-        type: "input",
-        message: "Input a unique numerical value for this role" 
-    },
     {
         name: "title",
         type: "input",
@@ -297,7 +300,6 @@ viewDep2().then(results=>{
     },
 ];
 });
-
 
 const addEmployee = [
     {
