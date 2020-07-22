@@ -171,6 +171,7 @@ return new Promise((resolve,reject)=>{
 };
 
 function addRole(){
+    depReset()
     viewRole()
     .then(res=>{console.table(res)})
     .then(results=>{
@@ -178,13 +179,14 @@ return new Promise((resolve,reject)=>{
     inquirer.prompt(addARole)
     .then(answer=>
     connection.query(`
-    INSERT INTO job_role (title,salary,department)
-    VALUES (?,?,?);
+    INSERT INTO job_role (title,salary,department,dep_name)
+    VALUES (?,?,?,?);
     `,
     [
         answer.title,
         answer.salary,
         answer.department.split(" ")[0],
+        answer.department.split(" ")[1],
     ], function (err, res){
         if (err) throw err;
         console.table(answer.title+" Added \n");
@@ -209,7 +211,7 @@ return new Promise((resolve,reject)=>{
         answer.first_name,
         answer.last_name,
         answer.job_role.split(" ")[0],
-        answer.department.split(" ")[0],
+        answer.department.split(" ")[1],
     ], function (err, res){
         if (err) throw err;
         console.table(answer.title+" Added \n");
@@ -278,7 +280,7 @@ const addADepartment = [
 
 let departments =[]
 let addARole = []
-viewDep().then(results=>{
+function depReset(){viewDep().then(results=>{
   departments =  results.map(name=>name.id + " "+name.dep_name)
   addARole = [
     {
@@ -300,6 +302,7 @@ viewDep().then(results=>{
     },
 ];
 });
+};
 
 const addEmployee = [
     {
