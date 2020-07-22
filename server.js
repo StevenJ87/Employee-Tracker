@@ -197,6 +197,8 @@ return new Promise((resolve,reject)=>{
     ).then(results=>{orExit()});
 };
 function addEmp(){
+    depReset()
+    roleReset()
     viewEmp()
     .then(res=>{console.table(res)})
     .then(results=>{
@@ -204,17 +206,17 @@ return new Promise((resolve,reject)=>{
     inquirer.prompt(addEmployee)
     .then(answer=>
     connection.query(`
-    INSERT INTO employee (first_name,last_name,job_role,department)
+    INSERT INTO employee (first_name,last_name,job_role,title)
     VALUES (?,?,?,?);
     `,
     [
         answer.first_name,
         answer.last_name,
         answer.job_role.split(" ")[0],
-        answer.department.split(" ")[1],
+        answer.job_role.split(" ")[1],
     ], function (err, res){
         if (err) throw err;
-        console.table(answer.title+" Added \n");
+        console.table(answer.first_name+answer.last_name+" Added \n");
         resolve(results);
     })
     )})
@@ -304,10 +306,27 @@ function depReset(){viewDep().then(results=>{
 });
 };
 
-const addEmployee = [
+let roles =[]
+let addEmployee = []
+function roleReset(){viewRole().then(results=>{
+  roles =  results.map(name=>name.id + " "+name.title)
+  addEmployee = [
     {
-        name: "id",
+        name: "first_name",
         type: "input",
-        message: "Input a unique numerical value for this department" 
-    }
+        message: "What is the employees FIRST name?" 
+    },
+    {
+        name: "last_name",
+        type: "input",
+        message: "What is the employees LAST name?" 
+    },
+    {
+        name: "job_role",
+        type: "list",
+        message: "What is theis employees role?" ,
+        choices: roles
+    },
 ];
+});
+};

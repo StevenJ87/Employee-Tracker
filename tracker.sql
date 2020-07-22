@@ -22,11 +22,10 @@ CREATE TABLE employee (
   id INT auto_increment NOT NULL PRIMARY KEY,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
-  CONSTRAINT FK_drole FOREIGN KEY (id)
+  job_role INT,
+  CONSTRAINT FK_job_role FOREIGN KEY (job_role)
   REFERENCES job_role(id),
-  department INT,
-  CONSTRAINT FK_department2 FOREIGN KEY (department)
-  REFERENCES department(id)
+  title VARCHAR(30)
 )
 
 SELECT * FROM department;
