@@ -18,7 +18,7 @@ CREATE TABLE job_role (
 );
 
 CREATE TABLE employee (
-  id INT NOT NULL PRIMARY KEY,
+  id INT NOT auto_increment NULL PRIMARY KEY,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   CONSTRAINT FK_drole FOREIGN KEY (id)

@@ -17,21 +17,26 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
+  welcome();
   runSearch();
 });
 
 // Start Program
-function runSearch() {
-// console.log(`
-//     ░█▀▀▀ █▀▄▀█ █▀▀█ █── █▀▀█ █──█ █▀▀ █▀▀ 
-//     ░█▀▀▀ █─▀─█ █──█ █── █──█ █▄▄█ █▀▀ █▀▀ 
-//     ░█▄▄▄ ▀───▀ █▀▀▀ ▀▀▀ ▀▀▀▀ ▄▄▄█ ▀▀▀ ▀▀▀ 
-    
-//     ▀▀█▀▀ █▀▀█ █▀▀█ █▀▀ █─█ █▀▀ █▀▀█ 
-//     ─░█── █▄▄▀ █▄▄█ █── █▀▄ █▀▀ █▄▄▀ 
-//     ─░█── ▀─▀▀ ▀──▀ ▀▀▀ ▀─▀ ▀▀▀ ▀─▀▀
-//     `)
+function welcome(){
+    return new Promise((resolve,reject)=>{
+            console.log(`
+        ░█▀▀▀ █▀▄▀█ █▀▀█ █── █▀▀█ █──█ █▀▀ █▀▀ 
+        ░█▀▀▀ █─▀─█ █──█ █── █──█ █▄▄█ █▀▀ █▀▀ 
+        ░█▄▄▄ ▀───▀ █▀▀▀ ▀▀▀ ▀▀▀▀ ▄▄▄█ ▀▀▀ ▀▀▀ 
+        
+        ▀▀█▀▀ █▀▀█ █▀▀█ █▀▀ █─█ █▀▀ █▀▀█ 
+        ─░█── █▄▄▀ █▄▄█ █── █▀▄ █▀▀ █▄▄▀ 
+        ─░█── ▀─▀▀ ▀──▀ ▀▀▀ ▀─▀ ▀▀▀ ▀─▀▀
+        `);
+        }).then(results=>{runSearch()});  
+}
 
+function runSearch() {
   inquirer
     .prompt({
       name: "action",
@@ -73,7 +78,6 @@ function runSearch() {
     
         case "View Role":
             viewRole();
-            orExit()
             break;
     
         case "View Employee":
@@ -135,28 +139,31 @@ function orExit(){
 }
 // Function
 function addDep(){
-    viewDep()
+    viewDep3()
     .then(results=>{
+return new Promise((resolve,reject)=>{
         inquirer.prompt(addADepartment)
         .then(answer=>
         connection.query(`
-        INSERT INTO department (id,dep_name)
-        VALUES (?,?);
+        INSERT INTO department (dep_name)
+        VALUES (?);
         `,
         [
-            answer.id,
             answer.dep_name
         ], function (err, res){
             if (err) throw err;
-            console.table(answer.dep_name+" Added \n")
-        }
-        )
-        )
-    })
-    
+            console.table(answer.dep_name+" Added \n");
+            resolve(results);
+        })
+    )})
+    }
+    ).then(results=>{orExit()});
 };
 
 function addRole(){
+    viewRole2()
+    .then(results=>{
+return new Promise((resolve,reject)=>{
     inquirer.prompt(addARole)
     .then(answer=>
     connection.query(`
@@ -170,10 +177,12 @@ function addRole(){
         answer.department.split(" ")[0],
     ], function (err, res){
         if (err) throw err;
-        console.table(answer.title+" Added \n")
+        console.table(answer.title+" Added \n");
+        resolve(results);
+    })
+    )})
     }
-    )
-    );
+    ).then(results=>{orExit()});
 };
 function addEmp(){
 
@@ -185,15 +194,47 @@ function viewDep(){
             console.table(results);
             resolve(results);
         })
+    }).then(results=>{orExit()});  
+};
+function viewDep3(){
+    return new Promise((resolve,reject)=>{
+        connection.query("SELECT * FROM department", function (err, results){
+            if (err) throw err;
+            console.table(results);
+            resolve(results);
+        })
+    })  
+};
+function viewDep2(){
+    return new Promise((resolve,reject)=>{
+        connection.query("SELECT * FROM department", function (err, results){
+        if (err) throw err;
+        resolve(results);
+        })
     })
     
 };
 function viewRole(){
-    connection.query(`
-    SELECT * FROM job_role;
-    `, function (err, res){
+    return new Promise((resolve,reject)=>{
+         connection.query(`
+        SELECT * FROM job_role;
+         `, function (err, results){
         if (err) throw err;
-        console.table(res)});
+        console.table(results);
+        resolve(results);
+    })
+}).then(results=>{orExit()});
+};
+function viewRole2(){
+    return new Promise((resolve,reject)=>{
+         connection.query(`
+        SELECT * FROM job_role;
+         `, function (err, results){
+        if (err) throw err;
+        console.table(results);
+        resolve(results);
+    })
+})
 };
 function viewEmp(){
 
@@ -217,13 +258,9 @@ function deleteEmp(){
 
 };
 
+
 // Prompts
 const addADepartment = [
-    {
-        name: "id",
-        type: "input",
-        message: "Input a unique numerical value for this department" 
-    },
     {
         name: "dep_name",
         type: "input",
@@ -233,9 +270,8 @@ const addADepartment = [
 
 let departments =[]
 let addARole = []
-viewDep().then(results=>{
+viewDep2().then(results=>{
   departments =  results.map(name=>name.id + " "+name.dep_name)
-console.log(departments)
   addARole = [
     {
         name: "id",
@@ -260,8 +296,6 @@ console.log(departments)
         
     },
 ];
-
-
 });
 
 
