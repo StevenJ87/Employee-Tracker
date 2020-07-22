@@ -73,6 +73,7 @@ function runSearch() {
     
         case "View Role":
             viewRole();
+            orExit()
             break;
     
         case "View Employee":
@@ -134,39 +135,65 @@ function orExit(){
 }
 // Function
 function addDep(){
-    inquirer.prompt(addADepartment)
-    .then(answer=>
-    connection.query(`
-    INSERT INTO department (id,dep_name)
-    VALUES (?,?);
-    `,
-    [
-        answer.id,
-        answer.dep_name
-    ], function (err, res){
-        if (err) throw err;
-        console.table(answer.dep_name+" Added \n")
-    }
-    )
-    )
+    viewDep()
+    .then(results=>{
+        inquirer.prompt(addADepartment)
+        .then(answer=>
+        connection.query(`
+        INSERT INTO department (id,dep_name)
+        VALUES (?,?);
+        `,
+        [
+            answer.id,
+            answer.dep_name
+        ], function (err, res){
+            if (err) throw err;
+            console.table(answer.dep_name+" Added \n")
+        }
+        )
+        )
+    })
+    
 };
 
 function addRole(){
-
+    inquirer.prompt(addARole)
+    .then(answer=>
+    connection.query(`
+    INSERT INTO job_role (id,title,salary,department)
+    VALUES (?,?,?,?);
+    `,
+    [
+        answer.id,
+        answer.title,
+        answer.salary,
+        answer.department.split(" ")[0],
+    ], function (err, res){
+        if (err) throw err;
+        console.table(answer.title+" Added \n")
+    }
+    )
+    );
 };
 function addEmp(){
 
 };
 function viewDep(){
+    return new Promise((resolve,reject)=>{
+        connection.query("SELECT * FROM department", function (err, results){
+            if (err) throw err;
+            console.table(results);
+            resolve(results);
+        })
+    })
+    
+};
+function viewRole(){
     connection.query(`
-    SELECT * FROM department;
+    SELECT * FROM job_role;
     `, function (err, res){
         if (err) throw err;
         console.table(res)});
-        orExit();
-};
-function viewRole(){
-
 };
 function viewEmp(){
 
@@ -201,5 +228,47 @@ const addADepartment = [
         name: "dep_name",
         type: "input",
         message: "What is this departments name?"
+    }
+];
+
+let departments =[]
+let addARole = []
+viewDep().then(results=>{
+  departments =  results.map(name=>name.id + " "+name.dep_name)
+console.log(departments)
+  addARole = [
+    {
+        name: "id",
+        type: "input",
+        message: "Input a unique numerical value for this role" 
+    },
+    {
+        name: "title",
+        type: "input",
+        message: "What is the name of this new role" 
+    },
+    {
+        name: "salary",
+        type: "input",
+        message: "What is the salary of this role?" 
+    },
+    {
+        name: "department",
+        type: "list",
+        message: "Which department does this role belong to" ,
+        choices: departments
+        
+    },
+];
+
+
+});
+
+
+const addEmployee = [
+    {
+        name: "id",
+        type: "input",
+        message: "Input a unique numerical value for this department" 
     }
 ];
