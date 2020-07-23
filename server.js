@@ -299,7 +299,6 @@ function updateDep(){
 
 // Update Roles
 function updateRole(){
-    depReset()
     roleReset()
     viewRole()
     .then(res=>{console.table(res)})
@@ -327,9 +326,39 @@ return new Promise((resolve,reject)=>{
     }
     ).then(results=>{orExit()});
 };
-// function updateEmp(){
 
-// };
+// Update Employee
+function updateEmp(){
+    roleReset()
+    empReset()
+    viewEmp()
+    .then(res=>{console.table(res)})
+    .then(results=>{
+return new Promise((resolve,reject)=>{
+    inquirer.prompt(EmpUpdate)
+    .then(answer=>
+    connection.query(`
+    UPDATE employee SET ? WHERE ?
+    `,
+    [
+        {
+            first_name: answer.first_name,
+            last_name: answer.last_name,
+            job_role: answer.job_role.split(" ")[0],
+            title: answer.job_role.split(" ")[1],
+          },
+          {
+            id: answer.id.split(" ")[0]
+          }
+    ], function (err, res){
+        if (err) throw err;
+        console.table(answer.first_name+answer.last_name+" Updated \n");
+        resolve(results);
+    })
+    )})
+    }
+    ).then(results=>{orExit()});
+};
 // function deleteDep(){
 
 // };
@@ -439,12 +468,43 @@ function roleReset(){viewRole().then(results=>{
     {
         name: "title",
         type: "input",
-        message: "What do nyou want the TITLE to be?" 
+        message: "What do you want the TITLE to be?" 
     },
     {
         name: "salary",
         type: "input",
         message: "What would you like the SALARY to be?" 
+    },
+];
+});
+};
+
+// Update Employee
+let EmpUpdate = []
+function empReset(){viewEmp().then(results=>{
+    employeeList =  results.map(name=>name.id + " "+name.first_name+ " "+name.last_name+ " "+name.title)
+  EmpUpdate = [
+    {
+        name: "id",
+        type: "list",
+        message: "Which EMPLOYEE would you like to edit?",
+        choices: employeeList
+    },
+    {
+        name: "first_name",
+        type: "input",
+        message: "Edit FIRST name? Or verify name by re-entering." 
+    },
+    {
+        name: "last_name",
+        type: "input",
+        message: "Edit LAST name? Or verify name by re-entering." 
+    },
+    {
+        name: "job_role",
+        type: "list",
+        message: "Update employy role?" ,
+        choices: roles
     },
 ];
 });
