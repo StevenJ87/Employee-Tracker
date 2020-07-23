@@ -270,7 +270,7 @@ function viewEmp(){
 
 // Update Department
 function updateDep(){
-    depReset()
+    depReset2()
     viewDep()
     .then(res=>{console.table(res)})
     .then(results=>{
@@ -299,7 +299,7 @@ function updateDep(){
 
 // Update Roles
 function updateRole(){
-    roleReset()
+    roleReset2()
     viewRole()
     .then(res=>{console.table(res)})
     .then(results=>{
@@ -330,7 +330,7 @@ return new Promise((resolve,reject)=>{
 // Update Employee
 function updateEmp(){
     roleReset()
-    empReset()
+    empReset2()
     viewEmp()
     .then(res=>{console.table(res)})
     .then(results=>{
@@ -436,7 +436,7 @@ function roleReset(){viewRole().then(results=>{
 
 // Update Department
 let depUpdate = [];
-function depReset(){viewDep().then(results=>{
+function depReset2(){viewDep().then(results=>{
   departments =  results.map(name=>name.id + " "+name.dep_name)
   depUpdate = [
     {
@@ -456,7 +456,7 @@ function depReset(){viewDep().then(results=>{
 
 // Update Role
 let updateARole = []
-function roleReset(){viewRole().then(results=>{
+function roleReset2(){viewRole().then(results=>{
   roles =  results.map(name=>name.id + " "+name.title+ " "+name.salary+ " "+name.dep_name)
   updateARole = [
     {
@@ -481,7 +481,7 @@ function roleReset(){viewRole().then(results=>{
 
 // Update Employee
 let EmpUpdate = []
-function empReset(){viewEmp().then(results=>{
+function empReset2(){viewEmp().then(results=>{
     employeeList =  results.map(name=>name.id + " "+name.first_name+ " "+name.last_name+ " "+name.title)
   EmpUpdate = [
     {
