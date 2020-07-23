@@ -268,13 +268,65 @@ function viewEmp(){
 })
 };
 
+// Update Department
+function updateDep(){
+    depReset()
+    viewDep()
+    .then(res=>{console.table(res)})
+    .then(results=>{
+    return new Promise((resolve,reject)=>{
+        inquirer.prompt(depUpdate)
+            .then(answer=>
+                connection.query(`
+      UPDATE department SET ? WHERE ?
+      `,[
+        {
+          dep_name: answer.dep_name
+        },
+        {
+          id: answer.id.split(" ")[0]
+        }
+      ],
+      function(err, res) {
+        if (err) throw err;
+        resolve(results);
+        console.log(answer.dep_name+" updated!\n");
+    })
+    )})
+    }
+    ).then(results=>{orExit()});
+};
 
-// function updateDep(){
-
-// };
-// function updateRole(){
-
-// };
+// Update Roles
+function updateRole(){
+    depReset()
+    roleReset()
+    viewRole()
+    .then(res=>{console.table(res)})
+    .then(results=>{
+return new Promise((resolve,reject)=>{
+    inquirer.prompt(updateARole)
+    .then(answer=>
+    connection.query(`
+    UPDATE job_role SET ? WHERE ?
+    `,
+    [
+        {
+            title: answer.title,
+            salary: answer.salary
+          },
+          {
+            id: answer.id.split(" ")[0]
+          }
+    ], function (err, res){
+        if (err) throw err;
+        console.table(answer.title+" Updated \n");
+        resolve(results);
+    })
+    )})
+    }
+    ).then(results=>{orExit()});
+};
 // function updateEmp(){
 
 // };
@@ -348,6 +400,51 @@ function roleReset(){viewRole().then(results=>{
         type: "list",
         message: "What is theis employees role?" ,
         choices: roles
+    },
+];
+});
+};
+
+// Update Department
+let depUpdate = [];
+function depReset(){viewDep().then(results=>{
+  departments =  results.map(name=>name.id + " "+name.dep_name)
+  depUpdate = [
+    {
+        name: "id",
+        type: "list",
+        message: "Which department would you like to edit?",
+        choices: departments
+    },
+    {
+        name: "dep_name",
+        type: "input",
+        message: "What would you like the department to be called?"
+    },
+];
+});
+};
+
+// Update Role
+let updateARole = []
+function roleReset(){viewRole().then(results=>{
+  roles =  results.map(name=>name.id + " "+name.title+ " "+name.salary+ " "+name.dep_name)
+  updateARole = [
+    {
+        name: "id",
+        type: "list",
+        message: "Which role would you like to edit?",
+        choices: roles
+    },
+    {
+        name: "title",
+        type: "input",
+        message: "What do nyou want the TITLE to be?" 
+    },
+    {
+        name: "salary",
+        type: "input",
+        message: "What would you like the SALARY to be?" 
     },
 ];
 });
