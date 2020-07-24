@@ -187,7 +187,7 @@ return new Promise((resolve,reject)=>{
     inquirer.prompt(addARole)
     .then(answer=>
     connection.query(`
-    INSERT INTO job_role (title,salary,department,dep_name)
+    INSERT INTO job_role (title,salary,department_id,dep_name)
     VALUES (?,?,?,?);
     `,
     [
@@ -216,7 +216,7 @@ return new Promise((resolve,reject)=>{
     inquirer.prompt(addEmployee)
     .then(answer=>
     connection.query(`
-    INSERT INTO employee (first_name,last_name,job_role,title)
+    INSERT INTO employee (first_name,last_name,job_role_id,title)
     VALUES (?,?,?,?);
     `,
     [
