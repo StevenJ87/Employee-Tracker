@@ -344,7 +344,7 @@ return new Promise((resolve,reject)=>{
         {
             first_name: answer.first_name,
             last_name: answer.last_name,
-            job_role: answer.job_role.split(" ")[0],
+            job_role_id: answer.job_role.split(" ")[0],
             title: answer.job_role.split(" ")[1],
           },
           {
