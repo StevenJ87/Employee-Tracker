@@ -1,7 +1,5 @@
 # Employee-Tracker
 
-# Note Taker
-
 ## Description
 
 This is an application designed to assiste with the tracking of personnel within a company. Using command line prompts, a user is able to view, add, and edit different dperatments, roles and employees.
